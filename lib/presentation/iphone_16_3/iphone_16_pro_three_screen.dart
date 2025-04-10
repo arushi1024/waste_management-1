@@ -5,7 +5,7 @@ import 'package:waste_management/theme/custom_button_style.dart';
 import 'package:waste_management/widgets/custom_elevated_button.dart';
 import 'package:waste_management/widgets/custom_radio_button.dart';
 import 'package:waste_management/widgets/custom_text_form_field.dart';
-// import './../theme/custom_button_style.dart';
+//import './../theme/custom_button_style.dart';
 // import './../widgets/custom_elevated_button.dart';
 // import './../widgets/custom_radio_button.dart';
 // import './../widgets/custom_text_form_field.dart';
@@ -67,7 +67,17 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
                     SizedBox(height: 4.h),
                     _buildUserTypeSelection(),
                     SizedBox(height: 22.h),
-                    CustomElevatedButton(text: "msg_create_an_account".tr.toUpperCase(),margin: EdgeInsets.only(left: 8.h, right: 14.h),buttonStyle: CustomButtonStyles.fillTeal,buttonTextStyle:CustomTextStyles.titleLargeOnPrimaryContainer,),
+                    CustomElevatedButton(
+                               text: "msg_create_an_account".tr.toUpperCase(),
+                               margin: EdgeInsets.only(left: 8.h, right: 14.h),
+                               buttonStyle: CustomButtonStyles.fillTeal,
+                            buttonTextStyle: CustomTextStyles.titleLargeOnPrimaryContainer,
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                      controller.signUpUser();
+                        }
+                        }, 
+                      ),
                     SizedBox(height: 106.h),
                     GestureDetector(
                       onTap: () {

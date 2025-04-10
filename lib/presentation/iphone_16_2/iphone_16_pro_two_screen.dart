@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/app_export.dart';
 import 'package:waste_management/core/utils/validations_functions.dart';
 import '../../theme/custom_button_style.dart';
@@ -44,7 +45,7 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
     );
   }
 
-  /// Section Widget
+  /// Email field
   Widget _buildEmailInputField() {
     return SizedBox(
       width: double.maxFinite,
@@ -69,6 +70,7 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
     );
   }
 
+  /// Password field
   Widget _buildPasswordInputField() {
     return SizedBox(
       width: double.maxFinite,
@@ -91,8 +93,7 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
             ),
             borderDecoration: TextFormFieldStyleHelper.outlineBlueGray,
             validator: (value) {
-              if (value == null ||
-                  (!isValidPassword(value, isRequired: true))) {
+              if (value == null || (!isValidPassword(value, isRequired: true))) {
                 return "err_msg_please_enter_valid_password".tr;
               }
               return null;
@@ -103,6 +104,7 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
     );
   }
 
+  /// Login form with Sign In and Forgot Password
   Widget _buildLoginForm() {
     return Container(
       width: double.maxFinite,
@@ -117,12 +119,24 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
           SizedBox(height: 24.h),
           _buildPasswordInputField(),
           SizedBox(height: 24.h),
-          CustomOutlinedButton(height: 40.h,text: "lbl_sign_in".tr,buttonTextStyle: CustomTextStyles.bodyLargeInterOnError,onPressed: () {onTapSignin();},),
+          CustomOutlinedButton(
+            height: 40.h,
+            text: "lbl_sign_in".tr,
+            buttonTextStyle: CustomTextStyles.bodyLargeInterOnError,
+            onPressed: () {
+              onTapSignin();
+            },
+          ),
           SizedBox(height: 16.h),
-          Text(
-            "msg_forgot_password".tr,
-            style: CustomTextStyles.bodyLargeInterOnSecondaryContainer.copyWith(
-              decoration: TextDecoration.underline,
+
+          /// 👇 Forgot Password clickable text
+          GestureDetector(
+            onTap: _showForgotPasswordDialog,
+            child: Text(
+              "msg_forgot_password".tr,
+              style: CustomTextStyles.bodyLargeInterOnSecondaryContainer.copyWith(
+                decoration: TextDecoration.underline,
+              ),
             ),
           ),
         ],
@@ -130,10 +144,52 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
     );
   }
 
-  /// Navigates to the homepageWithMenuScreen when the sign-in button is tapped.
+  /// Sign-in button action
   onTapSignin() {
-    Get.toNamed(
-      AppRoutes.homepageWithMenuScreen,
+    if (_formKey.currentState!.validate()) {
+      controller.loginUser();
+    }
+  }
+
+  /// 👇 Forgot Password dialog and Firebase action
+  void _showForgotPasswordDialog() {
+    final TextEditingController forgotEmailController = TextEditingController();
+
+    showDialog(
+      context: Get.context!,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Reset Password'),
+          content: TextField(
+            controller: forgotEmailController,
+            decoration: InputDecoration(hintText: "Enter your email"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                final email = forgotEmailController.text.trim();
+                if (email.isEmpty) {
+                  Get.snackbar("Input Error", "Please enter your email");
+                  return;
+                }
+
+                try {
+                  await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+                  Get.back(); // Close the dialog
+                  Get.snackbar("Success", "Password reset email sent!");
+                } on FirebaseAuthException catch (e) {
+                  Get.snackbar("Error", e.message ?? "Failed to send reset email");
+                }
+              },
+              child: Text("Send"),
+            ),
+          ],
+        );
+      },
     );
   }
 }
