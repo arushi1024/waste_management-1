@@ -152,6 +152,8 @@ class SlideScreen extends GetWidget<SlideController> {
                                                 "Ibl_welcome".tr,
                                                 textAlign: TextAlign.left,
                                                 style: theme.textTheme.displayMedium,
+                                                overflow: TextOverflow.clip,
+                                                maxLines: 1,
                                               ),
                                             ),
                                           )
@@ -180,6 +182,9 @@ class SlideScreen extends GetWidget<SlideController> {
                                                   Text(
                                                     "msg_file_a_complaint".tr,
                                                     style: theme.textTheme.bodySmall,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.clip,
+                                                    softWrap: false,
                                                   )
                                                 ],
                                               ),

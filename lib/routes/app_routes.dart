@@ -13,7 +13,10 @@ import 'package:waste_management/presentation/iphone_16_8/binding/iphone_16_pro_
 import 'package:waste_management/presentation/iphone_16_8/iphone_16_pro_eight_screen.dart';
 import 'package:waste_management/presentation/slide_screen/binding/slide_binding.dart';
 import 'package:waste_management/presentation/slide_screen/slide_screen.dart';
-
+import 'package:waste_management/presentation/frame_seventeen_screen/binding/frame_seventeen_binding.dart';
+import 'package:waste_management/presentation/frame_seventeen_screen/frame_seventeen_screen.dart';
+import'package:waste_management/presentation/iphone_16_pro_twelve_screen/binding/iphone_16_pro_twelve_binding.dart';
+import'package:waste_management/presentation/iphone_16_pro_twelve_screen/iphone_16_pro_twelve_screen.dart';
 import '../core/app_export.dart';
 
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
@@ -30,8 +33,8 @@ class AppRoutes {
   static const String slideScreen='/slide_screen';
   static const String appNavigationScreen = '/app_navigation_screen';
   static const String initialRoute = '/initialRoute';
-
-
+  static const String frameSeventeenScreen ='/frame_seventeen_screen';
+  static const String iphone16ProTwelveScreen ='/iphone_16_pro_twelve_screen';
   static List<GetPage> pages = [
     GetPage(
       name: iphone16ProOneScreen,
@@ -72,6 +75,16 @@ class AppRoutes {
       name: appNavigationScreen,
       page: () => AppNavigationsGreen(),
       bindings: [AppNavigationBinding()],
+    ),
+    GetPage(
+      name: frameSeventeenScreen,
+      page: () => FrameSeventeenScreen(),
+      bindings: [FrameSeventeenBinding()],
+    ),
+    GetPage(
+      name: iphone16ProTwelveScreen,
+      page: () => Iphone16ProTwelveScreen(),
+      bindings: [Iphone16ProTwelveBinding()],
     ),
     GetPage(
       name: initialRoute,

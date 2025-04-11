@@ -96,6 +96,16 @@ class AppNavigationsGreen extends GetWidget<AppNavigationController> {
                                 onTapScreenTitle: () =>
                                     onTapScreenTitle(AppRoutes.slideScreen),
                               ),
+                              _buildScreenTitle(
+                                screenTitle: "Frame Seventeen",
+                                onTapScreenTitle: () =>
+                                    onTapScreenTitle(AppRoutes.frameSeventeenScreen),
+                              ),
+                              _buildScreenTitle(
+                                screenTitle: "Iphone 16 Pro - Twelve",
+                                onTapScreenTitle: () =>
+                                    onTapScreenTitle(AppRoutes.iphone16ProTwelveScreen),
+                              ),
                             ],
                           ),
                         ),

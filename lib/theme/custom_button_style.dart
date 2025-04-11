@@ -21,7 +21,14 @@ class CustomButtonStyles {
     elevation: 0,
     padding: EdgeInsets.zero,
   );
-
+  static ButtonStyle get fillOnPrimaryContainer => ElevatedButton.styleFrom(
+    backgroundColor: theme.colorScheme.onPrimaryContainer,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8.h),
+    ),
+    elevation: 0,
+    padding: EdgeInsets.zero,
+  );
   // Text button style
   static ButtonStyle get none => ButtonStyle(
     backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),

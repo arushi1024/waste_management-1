@@ -29,7 +29,12 @@ final Map<String, String> en = {
    "Ibl_settings":"Settings",
   "Ibl_about_us":"About Us",
   "Ibl_welcome":"Welcome",
-  
+  "Ibl_your_profile":"Your Profile",
+  "Ibl_about_us2":"About Us",
+  "lbl_priyanka_reddy":"Priyanka Reddy",
+  "lbl_name2":"NAME",
+  "lbl_email_id":"EMAIL ID",
+  "msg_pripri_gmail_com":"pripri@gmail.com",
 
   "msg_already_have_an": "Already have an account? ",
   "msg_already_have_an2": "Already have an account? Log in",
@@ -42,5 +47,6 @@ final Map<String, String> en = {
   "err_msg_please_enter_valid_email": "Please enter valid email",
   "err_msg_please_enter_valid_password": "Please enter valid password",
   "err_msg_field_cannot_be_empty": "Field cannot be empty",
-  "msg_network_err": "Network Error"
+  "msg_network_err": "Network Error",
+  "msg_bengaluru_s_waste":"Bengaluru’s waste management system faces challenges such as inefficient collection, lack of segregation, and poor public awareness. The project proposes a smart waste management system leveraging real-time GPS tracking, geo-fencing, automated notifications, and a structured complaint redressal system to improve efficiency. Citizens receive alerts for waste collection, report missed pickups, and earn rewards for responsible disposal. NGO and CSR integration foster community involvement.By combining technology, policy enforcement, and community engagement, this scalable solution aims to enhance urban cleanliness, sustainability, and resource optimization for a greener future."
 };

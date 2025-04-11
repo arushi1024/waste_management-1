@@ -36,4 +36,8 @@ class ImageConstant {
       '$imagePath/img_tempimageliwfil_72x72.png';
 
   static String imageNotFound = 'assets/images/image_not_found.png';
+  static String img1828439RemovebgPreview = '$imagePath/img_1828439_removebg_preview.png';
+  static String imgImageRemovebgPreview12 = '$imagePath/image-removebg-preview-12.png';
+  static String imgImageRemovebgPreview10 = '$imagePath/image-removebg-preview-10.png';
+  static String imgImage2='$imagePath/img_bg_about_us.png';
 }
