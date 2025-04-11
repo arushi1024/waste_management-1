@@ -44,7 +44,6 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
       ),
     );
   }
-
   /// Email field
   Widget _buildEmailInputField() {
     return SizedBox(

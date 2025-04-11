@@ -56,28 +56,6 @@ class SlideScreen extends GetWidget<SlideController> {
                               ),
                             ],
                           ),
-                          SizedBox(height: 8.h),
-                          SizedBox(
-                            width: double.maxFinite,
-                            child: Row(
-                              children: [
-                                CustomImageView(
-                                  imagePath: ImageConstant.imgTempimagevuivjd8,
-                                  height: 58.h,
-                                  width: 44.h,
-                                ),
-                                SizedBox(
-                                  width: 114.h,
-                                  child: Text(
-                                    "msg_complaint_history".tr,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.headlineSmall,
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
                           SizedBox(height: 18.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -147,6 +125,8 @@ class SlideScreen extends GetWidget<SlideController> {
                                           Align(
                                             alignment: Alignment.topRight,
                                             child: Container(
+                                              width: double.infinity, // or a specific width like 200.w
+                                              padding: EdgeInsets.symmetric(horizontal: 12),
                                               decoration: AppDecoration.outlineBlack,
                                               child: Text(
                                                 "Ibl_welcome".tr,
