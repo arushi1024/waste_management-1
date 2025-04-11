@@ -40,7 +40,11 @@ class SlideScreen extends GetWidget<SlideController> {
                            },
                           ),
                           SizedBox(height: 68.h),
-                          Row(
+                          GestureDetector( 
+                             onTap: () {
+                            Get.toNamed(AppRoutes.frameSeventeenScreen);
+                        },
+                         child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               CustomImageView(
@@ -56,8 +60,13 @@ class SlideScreen extends GetWidget<SlideController> {
                               ),
                             ],
                           ),
+                          ),
                           SizedBox(height: 18.h),
-                          Row(
+                          GestureDetector(
+                             onTap: () {
+                                   Get.toNamed(AppRoutes.iphone16ProTwelveScreen);
+                                     },
+                              child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -74,7 +83,8 @@ class SlideScreen extends GetWidget<SlideController> {
                                 ),
                               )
                             ],
-                          )
+                              ),
+                          ),
                         ],
                       ),
                     ),
