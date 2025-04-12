@@ -35,6 +35,7 @@ final Map<String, String> en = {
   "lbl_name2":"NAME",
   "lbl_email_id":"EMAIL ID",
   "msg_pripri_gmail_com":"pripri@gmail.com",
+  "1bl_home":"Home",
 
   "msg_already_have_an": "Already have an account? ",
   "msg_already_have_an2": "Already have an account? Log in",

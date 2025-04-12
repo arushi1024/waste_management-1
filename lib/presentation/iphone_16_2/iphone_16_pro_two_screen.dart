@@ -25,6 +25,8 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
             width: double.maxFinite,
             padding: EdgeInsets.all(40.h),
             child: Column(
+              spacing: 62,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   decoration: AppDecoration.outlineBlack,
@@ -34,7 +36,6 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
                     style: CustomTextStyles.headlineMediumBlack900_2,
                   ),
                 ),
-                SizedBox(height: 62.h),
                 _buildLoginForm(),
                 SizedBox(height: 30.h),
               ],
@@ -50,6 +51,7 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
     return SizedBox(
       width: double.maxFinite,
       child: Column(
+        spacing: 8,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -64,7 +66,7 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
               vertical: 8.h,
             ),
             borderDecoration: TextFormFieldStyleHelper.outlineBlueGray,
-          ),
+          )
         ],
       ),
     );
@@ -98,7 +100,7 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
               }
               return null;
             },
-          ),
+          )
         ],
       ),
     );
@@ -113,12 +115,12 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
         borderRadius: BorderRadiusStyle.roundedBorder8,
       ),
       child: Column(
+        spacing: 24,
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildEmailInputField(),
-          SizedBox(height: 24.h),
           _buildPasswordInputField(),
-          SizedBox(height: 24.h),
           CustomOutlinedButton(
             height: 40.h,
             text: "lbl_sign_in".tr,
@@ -127,7 +129,7 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
               onTapSignin();
             },
           ),
-          SizedBox(height: 16.h),
+          //SizedBox(height: 16.h),
 
           /// 👇 Forgot Password clickable text
           GestureDetector(

@@ -119,6 +119,7 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
       margin: EdgeInsets.only(right: 8.h),
       padding: EdgeInsets.symmetric(horizontal: 6.h),
       child: Column(
+        spacing: 4,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -150,6 +151,7 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
       margin: EdgeInsets.only(right: 8.h),
       padding: EdgeInsets.symmetric(horizontal: 8.h),
       child: Column(
+        spacing: 6,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -163,6 +165,7 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
             controller: controller.emailtwoController,
             hintText: "msg_enter_your_email".tr,
             textInputType: TextInputType.emailAddress,
+            contentPadding: EdgeInsets.symmetric(horizontal: 12.h,vertical: 16.h),
           ),
         ],
       ),

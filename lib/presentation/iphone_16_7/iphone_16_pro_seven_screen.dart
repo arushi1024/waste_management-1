@@ -23,11 +23,9 @@ class Iphone16ProSevenScreen extends GetWidget<Iphone16ProSevenController> {
           width: double.maxFinite,
           child: SingleChildScrollView(
             child: Container(
-              height: 724.h,
               width: double.maxFinite,
               padding: EdgeInsets.only(left: 18.h, top: 8.h, right: 18.h),
               child: Column(
-                mainAxisSize: MainAxisSize.max,
                 children: [
                   Container(
                     decoration: AppDecoration.outlineBlack,
@@ -48,11 +46,11 @@ class Iphone16ProSevenScreen extends GetWidget<Iphone16ProSevenController> {
                     margin: EdgeInsets.only(left: 10.h, right: 22.h),
                     buttonStyle: CustomButtonStyles.fillLightGreen,
                     buttonTextStyle: CustomTextStyles.headlineMediumBlack900_1,
-                    onPressed: () {
-                 // Navigate to iPhone 16 Pro Eight screen
-                    Get.toNamed(AppRoutes.iphone16ProEightScreen);
-  }
+                    onPressed: (){
+                      Get.toNamed(AppRoutes.iphone16ProEightScreen);
+                    },
                   ),
+                  SizedBox(height: 54.h,)
                 ],
               ),
             ),
@@ -61,11 +59,11 @@ class Iphone16ProSevenScreen extends GetWidget<Iphone16ProSevenController> {
       ),
     );
   }
-
+  
   /// Builds the AppBar widget.
   PreferredSizeWidget _buildAppBar() {
     return CustomAppBar(
-      leadingWidth: 62.h,
+      leadingWidth: 72.h,
       leading: AppbarLeadingImage(
         imagePath: ImageConstant.imgTempimagez2xc80,
         height: 44.h,
@@ -84,8 +82,8 @@ class Iphone16ProSevenScreen extends GetWidget<Iphone16ProSevenController> {
       width: double.maxFinite,
       margin: EdgeInsets.only(right: 10.h),
       child: Column(
+        spacing: 10,
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             "Ibl_vehicle_number".tr,
@@ -107,8 +105,8 @@ class Iphone16ProSevenScreen extends GetWidget<Iphone16ProSevenController> {
     return SizedBox(
       width: double.maxFinite,
       child: Column(
+        spacing: 2,
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             "msg_reason_for_complaint".tr,
