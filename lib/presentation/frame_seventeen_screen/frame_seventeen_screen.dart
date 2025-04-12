@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart'; 
 import '../../core/app_export.dart';
 import 'controller/frame_seventeen_controller.dart'; 
-import 'models/contactinfolist_item_model.dart';
-import 'widgets/contactinfolist_item_widget.dart'; // ignore_for_file: must_be_immutable
+ // ignore_for_file: must_be_immutable
 class FrameSeventeenScreen extends GetWidget<FrameSeventeenController> {
 const FrameSeventeenScreen ({Key? key})
 : super(
@@ -11,14 +10,8 @@ key: key,
 @override
 Widget build (BuildContext context) {
 return Scaffold(
-backgroundColor: theme.colorScheme.onPrimaryContainer, body: SafeArea( child: SizedBox(
-width: double.maxFinite, child: Column ( spacing: 46, mainAxisSize: MainAxisSize.max,
-crossAxisAlignment: CrossAxisAlignment.start, children: [_buildProfileSection(),_buildContactInfoList()],
-),
-),
-),
-);
-}
+backgroundColor: appTheme.whiteA700, body: SafeArea( child: SizedBox(
+width: double.maxFinite, child: SingleChildScrollView ( child: SizedBox(width: double.maxFinite, child: Column(children: [_buildProfileSection(),SizedBox(height: 46.h,),_buildNameRow(),SizedBox(height: 40.h,),_buildEmailRow(),SizedBox(height: 84.h,),Text("lbl_version_1_0_0".tr,style: theme.textTheme.labelLarge,),SizedBox(height: 34.h,)],),),),),),);} 
 /// Section Widget
 Widget _buildProfileSection() {
 return Container(
@@ -51,31 +44,63 @@ height: 178.h, width: 196.h, margin: EdgeInsets.only(left: 102.h),
 );
 }
 /// Section Widget
-Widget _buildContactInfoList() {
-return Padding (
-padding: EdgeInsets.symmetric(horizontal: 24.h),
-child: Obx(
-() => ListView.separated(
-padding: EdgeInsets.zero, physics: NeverScrollableScrollPhysics(),
-shrinkWrap: true,
-separatorBuilder: (context, index) {
-return SizedBox(
-height: 44.h,
-);
-},
-itemCount: controller.frameSeventeenModelObj.value.contactinfolistItemList.value.length,
-itemBuilder: (context, index) {
-ContactinfolistItemModel model = controller.frameSeventeenModelObj.value.contactinfolistItemList.value[index];
-return ContactinfolistItemWidget(
-model,
-);
-},
-),
-),
-);
-}
-onTapImgTempimagez2xcei(){
-  Get.toNamed(AppRoutes.slideScreen,
+Widget _buildNameRow(){
+  return Container(
+    width: double.maxFinite,
+    margin: EdgeInsets.symmetric(horizontal: 36.h),
+    child: Row(
+      children: [
+        CustomImageView(
+          imagePath: ImageConstant.img1828439RemovebgPreview,
+          height: 72.h,
+          width: 90.h,
+        ),
+        Expanded(child: Column(
+          spacing: 6,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("lbl_name2".tr,
+            style: theme.textTheme.bodyMedium,),
+            Obx(() => Text(controller.userName.value,
+            style: theme.textTheme.bodySmall,)), 
+          ],
+        ),
+        )
+      ],
+    ),
   );
 }
+Widget _buildEmailRow(){
+  return Container(
+    width: double.maxFinite,
+    margin: EdgeInsets.symmetric(horizontal: 36.h),
+    child: Row(
+      children: [
+        CustomImageView(
+          imagePath: ImageConstant.imgImageRemovebgPreview12,
+          height: 72.h,
+          width: 90.h,
+        ),
+        Expanded(child: Column(
+          spacing: 6,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("lbl_email_id".tr,
+            style: theme.textTheme.bodyMedium,
+            ),
+            Obx(()=> Text(controller.userEmail.value,
+            style: theme.textTheme.bodySmall,))
+          ],
+        ),
+        )
+      ],
+    ),
+  );  
 }
+onTapImgTempimagez2xcei()
+{
+  Get.toNamed(
+    AppRoutes.slideScreen,
+  );
+}  
+}    

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:waste_management/core/utils/shared_preferences_helper.dart';
+import 'package:waste_management/presentation/frame_seventeen_screen/controller/frame_seventeen_controller.dart';
 import '../../../core/app_export.dart';
 
 class Iphone16ProTwoController extends GetxController {
@@ -20,6 +22,15 @@ class Iphone16ProTwoController extends GetxController {
         email: email,
         password: password,
       );
+      final userDetails = await SharedPrefsHelper.getUserDetails();
+
+
+      if (userDetails['email'] == email) {
+        final profileController = Get.put(FrameSeventeenController());
+        profileController.userName.value = userDetails['name'] ?? '';
+        profileController.userEmail.value = userDetails['email'] ?? '';
+        profileController.userType.value = userDetails['userType'] ?? '';
+      }
       Get.snackbar("Login Success", "Welcome back!");
 
       // Navigate to home or dashboard screen

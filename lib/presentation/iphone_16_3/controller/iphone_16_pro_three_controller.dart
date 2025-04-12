@@ -1,3 +1,4 @@
+import 'package:waste_management/core/utils/shared_preferences_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/app_export.dart';
@@ -14,6 +15,7 @@ class Iphone16ProThreeController extends GetxController {
   Rx<String> userTypeSelection = "".obs;
 
   Future<void> signUpUser() async {
+    final name = nametwoController.text.trim();
     final email = emailtwoController.text.trim();
     final password = passwordtwoController.text.trim();
 
@@ -29,6 +31,7 @@ class Iphone16ProThreeController extends GetxController {
     try {
       final userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+         await SharedPrefsHelper.saveUserDetails(name: name, email: email, userType: userTypeSelection.value);
       Get.snackbar("Success", "Signed up: ${userCredential.user?.email}");
       Get.offAllNamed(AppRoutes.iphone16ProTwoScreen);
       // Optionally navigate to another screen:
