@@ -34,6 +34,11 @@ dependencies:
   cached_network_image: ^3.4.1
   flutter_svg: ^2.0.17
   shared_preferences: ^2.2.2 
+  geolocator: ^13.0.4
+  webview_flutter: ^4.10.0
+  permission_handler: ^12.0.0+1
+  mapbox_maps_flutter: ^2.7.0
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -60,6 +65,8 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/ 
+    - assets/map_client.html
+    - assets/images/truck-driver.jpg
     
   fonts:
     - family: Inter

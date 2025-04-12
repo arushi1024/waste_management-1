@@ -5,6 +5,8 @@ import '../../widgets/app_bar/appbar_leading_image.dart';
 import '../../widgets/app_bar/appbar_title.dart';
 import '../../widgets/app_bar/custom_app_bar.dart';
 import 'controller/homepage_with_menu_controller.dart'; // ignore_for_file: must_be_immutable
+import 'package:permission_handler/permission_handler.dart';
+
 
 class HomepageWithMenuScreen extends GetWidget<HomepageWithMenuController> {
   const HomepageWithMenuScreen({super.key});
@@ -56,23 +58,33 @@ class HomepageWithMenuScreen extends GetWidget<HomepageWithMenuController> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 158.h,
-                      child: Column(
-                        spacing: 22,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          CustomImageView(
-                            imagePath: ImageConstant.imgTempimagelfdver,
-                            height: 94.h,
-                            width: 96.h,
-                            margin: EdgeInsets.only(right: 14.h),
-                          ),
-                          Text(
-                            "msg_track_my_collector".tr,
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                        ],
+                  GestureDetector(
+                      onTap: () async {
+                        PermissionStatus status = await Permission.location.request();
+                        if (status.isGranted) {
+                          Get.toNamed(AppRoutes.mapClientScreen); // Change this route if needed
+                        } else {
+                          Get.snackbar('Permission Denied', 'Location access is required to track the collector.');
+                        }
+                      },
+                      child: SizedBox(
+                        width: 158.h,
+                        child: Column(
+                          spacing: 22,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            CustomImageView(
+                              imagePath: ImageConstant.imgTempimagelfdver,
+                              height: 94.h,
+                              width: 96.h,
+                              margin: EdgeInsets.only(right: 14.h),
+                            ),
+                            Text(
+                              "msg_track_my_collector".tr,
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                          ],
+                        ),
                       ),
                     )
                   ],
