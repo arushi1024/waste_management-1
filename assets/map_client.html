@@ -7,7 +7,7 @@
   <script src='https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js'></script>
   <link href='https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css' rel='stylesheet' />
   <style> 
-    body { margin: 0; padding: 0; }
+    body { margin: 0; padding: 0; overflow: hidden; }
     #map { position: absolute; top: 0; bottom: 0; width: 100%; }
     .mapboxgl-popup-content {
       background-color: rgba(0, 0, 0, 0.7);
@@ -64,6 +64,19 @@
       from {bottom: 30px; opacity: 1;}
       to {bottom: 0; opacity: 0;}
     }
+    /* Truck icon styling */
+    .truck-icon {
+      width: 30px;
+      height: 30px;
+      background-color: red;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
@@ -85,16 +98,16 @@
     // Haversine Formula to calculate distance between two coordinates in kilometers
     function haversine(lat1, lon1, lat2, lon2) {
       const R = 6371; // Radius of the Earth in kilometers
-      const dLat = (lat2 - lat1) * (Math.PI / 180); // Degrees to radians
-      const dLon = (lon2 - lon1) * (Math.PI / 180); // Degrees to radians
+      const dLat = (lat2 - lat1) * (Math.PI / 180);
+      const dLon = (lon2 - lon1) * (Math.PI / 180);
       const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
                 Math.sin(dLon / 2) * Math.sin(dLon / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c; // Distance in kilometers
+      return R * c;
     }
 
-    // Custom implementation of Get.snackbar for web
+    // Custom notification function
     function showSnackbar(title, message) {
       const snackbar = document.getElementById("snackbar");
       snackbar.innerHTML = `<strong>${title}</strong><br>${message}`;
@@ -123,114 +136,150 @@
       snackbar: showSnackbar
     };
 
-    let map, clientMarker, truckMarker, truckMovement;
+    let map, clientMarker, truckMarker, animationFrameId;
     let clientLocation;
     let geofenceTriggered = false;
+    let isMoving = false;
 
-    navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {
-      enableHighAccuracy: true
-    });
-
-    function successLocation(position) {
-      clientLocation = [position.coords.longitude, position.coords.latitude];
-      setupMap(clientLocation);
+    // Try to get device location or use default
+    function initMap() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            clientLocation = [position.coords.longitude, position.coords.latitude];
+            setupMap(clientLocation);
+          },
+          () => {
+            clientLocation = getRandomLocation();
+            setupMap(clientLocation);
+          },
+          { enableHighAccuracy: true, timeout: 5000 }
+        );
+      } else {
+        clientLocation = getRandomLocation();
+        setupMap(clientLocation);
+      }
     }
 
-    function errorLocation() {
-      clientLocation = getRandomLocation();
-      setupMap(clientLocation);
-    }
-
-    function setupMap(center) {
+    function setupMap(center) {  
+      // Initialize map with lower initial zoom level for better performance
       map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v11',
         center: center,
-        zoom: 15
+        zoom: 14,
+        attributionControl: false,
+        preserveDrawingBuffer: false // Improves performance
       });
 
-      // Client location marker with a visible popup and custom styling
-      clientMarker = new mapboxgl.Marker({ color: 'blue' })  // Blue marker for client
-        .setLngLat(center)
-        .setPopup(new mapboxgl.Popup({ offset: 25, closeButton: false })
-          .setHTML("<strong>You are here</strong>"))
-        .addTo(map);
-      
-      // Show the popup by default
-      clientMarker.togglePopup();
-
-      // Set truck's starting point further away (5 km away for demo purposes)
-      const truckStartLongitude = center[0] + (2 / 6371) * (180 / Math.PI); // Approx 5 km east
-      const truckStartLatitude = center[1] + (2 / 6371) * (180 / Math.PI) / Math.cos(center[1] * (Math.PI / 180)); // Approx 5 km north
-
-      // Truck marker with a different color (red)
-      truckMarker = new mapboxgl.Marker({ color: 'red' })  // Red marker for truck
-        .setLngLat([truckStartLongitude, truckStartLatitude])
-        .setPopup(new mapboxgl.Popup({ offset: 25 })
-          .setHTML("<strong>Trash Collection Truck</strong>"))
-        .addTo(map);
+      map.on('load', function() {
+        // Client location marker
+        clientMarker = new mapboxgl.Marker({ color: 'blue' })
+          .setLngLat(center)
+          .setPopup(new mapboxgl.Popup({ offset: 25, closeButton: false })
+            .setHTML("<strong>You are here</strong>"))
+          .addTo(map);
         
+        clientMarker.togglePopup();
+
+        // Calculate truck starting position (2km away)
+        const truckStartLongitude = center[0] + (0.02);
+        const truckStartLatitude = center[1] + (0.02);
+
+        // Create a custom truck marker element for better performance
+        const truckIcon = document.createElement('div');
+        truckIcon.className = 'truck-icon';
+        truckIcon.textContent = '🚚';
+
+        // Add truck marker
+        truckMarker = new mapboxgl.Marker({ element: truckIcon })
+          .setLngLat([truckStartLongitude, truckStartLatitude])
+          .setPopup(new mapboxgl.Popup({ offset: 25 })
+            .setHTML("<strong>Trash Collection Truck</strong>"))
+          .addTo(map);
+        
+        // Fit bounds to show both markers
+        const bounds = new mapboxgl.LngLatBounds();
+        bounds.extend(center);
+        bounds.extend([truckStartLongitude, truckStartLatitude]);
+        map.fitBounds(bounds, { padding: 100 });
+      });
+
       // Set up the control button
       document.getElementById('moveRed').addEventListener('click', moveRedMarker);
-      
-      // Fit bounds to show both markers
-      const bounds = new mapboxgl.LngLatBounds();
-      bounds.extend(center);
-      bounds.extend([truckStartLongitude, truckStartLatitude]);
-      map.fitBounds(bounds, { padding: 100 });
     }
 
     function moveRedMarker() {
-      // Clear any existing movement interval
-      if (truckMovement) {
-        clearInterval(truckMovement);
+      // Prevent multiple animations
+      if (isMoving) return;
+      
+      // Cancel any existing animation
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
       }
       
-      // Reset geofence trigger flag
+      isMoving = true;
       geofenceTriggered = false;
       
       // Reset truck position
-      const truckStartLongitude = clientLocation[0] + (2 / 6371) * (180 / Math.PI);
-      const truckStartLatitude = clientLocation[1] + (2 / 6371) * (180 / Math.PI) / Math.cos(clientLocation[1] * (Math.PI / 180));
+      const truckStartLongitude = clientLocation[0] + 0.02;
+      const truckStartLatitude = clientLocation[1] + 0.02;
       truckMarker.setLngLat([truckStartLongitude, truckStartLatitude]);
       
-      // Final destination near client location
+      // Target destination (client location)
       const finalPoint = clientLocation;
 
-      // Simulate movement toward the destination
-      const steps = 100;
-      let step = 0;
-      const lngDiff = (finalPoint[0] - truckStartLongitude) / steps;
-      const latDiff = (finalPoint[1] - truckStartLatitude) / steps;
-
-      truckMovement = setInterval(() => {
-        if (step <= steps) {
-          const newLng = truckStartLongitude + lngDiff * step;
-          const newLat = truckStartLatitude + latDiff * step;
-          truckMarker.setLngLat([newLng, newLat]);
-
-          const distance = haversine(clientLocation[1], clientLocation[0], newLat, newLng);
+      // Use fewer animation steps for better performance
+      const totalSteps = 40; // Reduced from 100
+      let currentStep = 0;
+      
+      const lngDiff = (finalPoint[0] - truckStartLongitude) / totalSteps;
+      const latDiff = (finalPoint[1] - truckStartLatitude) / totalSteps;
+      
+      // Start time for animation
+      let startTime = null;
+      const duration = 5000; // 5 seconds total for animation
+      
+      // Animation function using requestAnimationFrame for better performance
+      function animate(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Calculate new position
+        const newLng = truckStartLongitude + (finalPoint[0] - truckStartLongitude) * progress;
+        const newLat = truckStartLatitude + (finalPoint[1] - truckStartLatitude) * progress;
+        
+        // Update marker position
+        truckMarker.setLngLat([newLng, newLat]);
+        
+        // Check distance for geofence
+        const distance = haversine(clientLocation[1], clientLocation[0], newLat, newLng);
+        
+        // Trigger notification at 1km distance
+        if (distance <= 1 && !geofenceTriggered) {
+          showSnackbar("Geofence entered", "Keep your trash ready!");
+          geofenceTriggered = true;
           
-          // Check if truck entered the 1km geofence and hasn't triggered notification yet
-          if (distance <= 1 && !geofenceTriggered) {
-            // Show notification to prepare trash
-            Get.snackbar("Geofence entered", "Keep your trash ready!");
-            
-            // Mark geofence as triggered to prevent multiple notifications
-            geofenceTriggered = true;
-            
-            // Show truck popup when entering geofence
-            if (!truckMarker.getPopup().isOpen()) {
-              truckMarker.togglePopup();
-            }
+          if (!truckMarker.getPopup().isOpen()) {
+            truckMarker.togglePopup();
           }
-
-          step++;
-        } else {
-          clearInterval(truckMovement);
         }
-      }, 100); // smoother animation speed
+        
+        // Continue animation if not complete
+        if (progress < 1) {
+          animationFrameId = requestAnimationFrame(animate);
+        } else {
+          isMoving = false;
+        }
+      }
+      
+      // Start the animation
+      animationFrameId = requestAnimationFrame(animate);
     }
+
+    // Initialize the map after page load
+    window.onload = initMap;
   </script>
 </body>
 </html>

@@ -5,10 +5,6 @@ import 'package:waste_management/theme/custom_button_style.dart';
 import 'package:waste_management/widgets/custom_elevated_button.dart';
 import 'package:waste_management/widgets/custom_radio_button.dart';
 import 'package:waste_management/widgets/custom_text_form_field.dart';
-//import './../theme/custom_button_style.dart';
-// import './../widgets/custom_elevated_button.dart';
-// import './../widgets/custom_radio_button.dart';
-// import './../widgets/custom_text_form_field.dart';
 import 'controller/iphone_16_pro_three_controller.dart';
 
 // ignore_for_file: must_be_immutable
@@ -33,6 +29,7 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Header
                     Align(
                       alignment: Alignment.center,
                       child: Container(
@@ -45,10 +42,15 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
                       ),
                     ),
                     SizedBox(height: 16.h),
+                    // Name Input Section
                     _buildNameInputSection(),
+                    SizedBox(height: 16.h),
+                    // Email Input Section
                     _buildEmailInputSection(),
+                    SizedBox(height: 16.h),
+                    // Password Input Section
                     _buildPasswordInputSection(),
-                    SizedBox(height: 4.h),
+                    SizedBox(height: 8.h),
                     Padding(
                       padding: EdgeInsets.only(left: 14.h),
                       child: Text(
@@ -56,7 +58,7 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
                         style: CustomTextStyles.bodyMediumRobotoBlack900,
                       ),
                     ),
-                    SizedBox(height: 4.h),
+                    SizedBox(height: 8.h),
                     Padding(
                       padding: EdgeInsets.only(left: 18.h),
                       child: Text(
@@ -64,21 +66,24 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
                         style: CustomTextStyles.titleLargeGray900,
                       ),
                     ),
-                    SizedBox(height: 4.h),
+                    SizedBox(height: 8.h),
+                    // User Type Selection
                     _buildUserTypeSelection(),
                     SizedBox(height: 22.h),
+                    // Create Account Button
                     CustomElevatedButton(
-                               text: "msg_create_an_account".tr.toUpperCase(),
-                               margin: EdgeInsets.only(left: 8.h, right: 14.h),
-                               buttonStyle: CustomButtonStyles.fillTeal,
-                            buttonTextStyle: CustomTextStyles.titleLargeOnPrimaryContainer,
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                      controller.signUpUser();
+                      text: "msg_create_an_account".tr.toUpperCase(),
+                      margin: EdgeInsets.only(left: 8.h, right: 14.h),
+                      buttonStyle: CustomButtonStyles.fillTeal,
+                      buttonTextStyle: CustomTextStyles.titleLargeOnPrimaryContainer,
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          controller.signUpUser();
                         }
-                        }, 
-                      ),
+                      },
+                    ),
                     SizedBox(height: 106.h),
+                    // I Already Have an Account
                     GestureDetector(
                       onTap: () {
                         onTapTxtIAlreadyHaveAn2();
@@ -119,11 +124,10 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
       margin: EdgeInsets.only(right: 8.h),
       padding: EdgeInsets.symmetric(horizontal: 6.h),
       child: Column(
-        spacing: 4,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 6.h),
+            padding: EdgeInsets.only(left: 4.h),
             child: Text(
               "lbl_name".tr,
               style: theme.textTheme.bodyLarge,
@@ -132,7 +136,6 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
           CustomTextFormField(
             controller: controller.nametwoController,
             hintText: "lbl_enter_your_name".tr,
-            contentPadding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 16.h),
             validator: (value) {
               if (!isText(value)) {
                 return "err_msg_please_enter_valid_text".tr;
@@ -149,9 +152,8 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
     return Container(
       width: double.maxFinite,
       margin: EdgeInsets.only(right: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 4.h),
       child: Column(
-        spacing: 6,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -165,7 +167,6 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
             controller: controller.emailtwoController,
             hintText: "msg_enter_your_email".tr,
             textInputType: TextInputType.emailAddress,
-            contentPadding: EdgeInsets.symmetric(horizontal: 12.h,vertical: 16.h),
           ),
         ],
       ),
@@ -175,7 +176,7 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
   Widget _buildPasswordInputSection() {
     return Container(
       width: double.maxFinite,
-      margin: EdgeInsets.symmetric(horizontal: 12.h),
+      margin: EdgeInsets.symmetric(horizontal: 4.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -192,7 +193,6 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
             textInputAction: TextInputAction.done,
             textInputType: TextInputType.visiblePassword,
             obscureText: true,
-            contentPadding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 16.h),
             validator: (value) {
               if (value == null || !isValidPassword(value, isRequired: true)) {
                 return "err_msg_please_enter_valid_password".tr;
@@ -210,26 +210,66 @@ class Iphone16ProThreeScreen extends GetWidget<Iphone16ProThreeController> {
       padding: EdgeInsets.only(left: 14.h),
       child: Obx(
         () => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CustomRadioButton(
-              text: "lbl_customer".tr.toUpperCase(),
-              value: "lbl_customer".tr,
+              text: "Customer",
+              value: "Customer",
               groupValue: controller.userTypeSelection.value,
               onChange: (value) {
                 controller.userTypeSelection.value = value;
+                controller.selectedBlock.value = "";
               },
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 14.h),
-              child: CustomRadioButton(
-                text: "lbl_collector".tr.toUpperCase(),
-                value: "lbl_collector".tr,
-                groupValue: controller.userTypeSelection.value,
-                onChange: (value) {
-                  controller.userTypeSelection.value = value;
+            SizedBox(height: 12.h),
+            CustomRadioButton(
+              text: "Collector",
+              value: "Collector",
+              groupValue: controller.userTypeSelection.value,
+              onChange: (value) {
+                controller.userTypeSelection.value = value;
+                controller.selectedBlock.value = "";
+              },
+            ),
+            if (controller.userTypeSelection.value == "Customer") ...[
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'Select Your Block',
+                    border: OutlineInputBorder(),
+                  ),
+                  value: controller.selectedBlock.value.isNotEmpty
+                      ? controller.selectedBlock.value
+                      : null,
+                  items: controller.blocks.map((block) {
+                    return DropdownMenuItem<String>(
+                      value: block,
+                      child: Text(block),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      controller.selectedBlock.value = value;
+                    }
+                  },
+                ),
+              ),
+              SizedBox(height: 16.h),
+              TextFormField(
+                controller: controller.addressController,
+                decoration: InputDecoration(
+                  labelText: 'Enter Your Address',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your address';
+                  }
+                  return null;
                 },
               ),
-            ),
+            ],
           ],
         ),
       ),

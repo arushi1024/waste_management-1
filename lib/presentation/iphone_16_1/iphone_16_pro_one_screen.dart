@@ -8,6 +8,7 @@ class Iphone16ProOneScreen extends GetWidget<Iphone16ProOneController> {
 
   @override
   Widget build(BuildContext context) {
+    print("Iphone16ProOneScreen is working");
     return Scaffold(
       backgroundColor: theme.colorScheme.onPrimaryContainer,
       body: SafeArea(

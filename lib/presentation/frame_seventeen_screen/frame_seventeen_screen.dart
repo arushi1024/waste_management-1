@@ -1,106 +1,143 @@
-import 'package:flutter/material.dart'; 
-import '../../core/app_export.dart';
-import 'controller/frame_seventeen_controller.dart'; 
- // ignore_for_file: must_be_immutable
-class FrameSeventeenScreen extends GetWidget<FrameSeventeenController> {
-const FrameSeventeenScreen ({Key? key})
-: super(
-key: key,
-);
-@override
-Widget build (BuildContext context) {
-return Scaffold(
-backgroundColor: appTheme.whiteA700, body: SafeArea( child: SizedBox(
-width: double.maxFinite, child: SingleChildScrollView ( child: SizedBox(width: double.maxFinite, child: Column(children: [_buildProfileSection(),SizedBox(height: 46.h,),_buildNameRow(),SizedBox(height: 40.h,),_buildEmailRow(),SizedBox(height: 84.h,),Text("lbl_version_1_0_0".tr,style: theme.textTheme.labelLarge,),SizedBox(height: 34.h,)],),),),),),);} 
-/// Section Widget
-Widget _buildProfileSection() {
-return Container(
-width: double.maxFinite, padding: EdgeInsets.only(
-left: 16.h, top: 20.h, bottom: 20.h,
-),
-decoration: AppDecoration.fillLightGreen, child: Column(
-crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-SizedBox(height: 2.h),
-CustomImageView(
-imagePath: ImageConstant.imgTempimagez2xc80,
-height: 44.h, width: 46.h,
-onTap: () {
-  onTapImgTempimagez2xcei();
-},
-),
-Container( margin: EdgeInsets.only(left: 66.h), decoration: AppDecoration.outlineBlack,
-child: Text(
-"Ibl_your_profile".tr, textAlign: TextAlign.center,
-style: CustomTextStyles.displayMediumOnPrimaryContainer,
-),
-),
-SizedBox(height: 46.h),
-CustomImageView(
-imagePath: ImageConstant.imgImageRemovebgPreview10,
-height: 178.h, width: 196.h, margin: EdgeInsets.only(left: 102.h),
-)
-],
-),
-);
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class FrameSeventeenScreen extends StatefulWidget {
+  const FrameSeventeenScreen({Key? key}) : super(key: key);
+
+  @override
+  State<FrameSeventeenScreen> createState() => _FrameSeventeenScreenState();
 }
-/// Section Widget
-Widget _buildNameRow(){
-  return Container(
-    width: double.maxFinite,
-    margin: EdgeInsets.symmetric(horizontal: 36.h),
-    child: Row(
-      children: [
-        CustomImageView(
-          imagePath: ImageConstant.img1828439RemovebgPreview,
-          height: 72.h,
-          width: 90.h,
-        ),
-        Expanded(child: Column(
-          spacing: 6,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("lbl_name2".tr,
-            style: theme.textTheme.bodyMedium,),
-            Obx(() => Text(controller.userName.value,
-            style: theme.textTheme.bodySmall,)), 
-          ],
-        ),
-        )
-      ],
-    ),
-  );
-}
-Widget _buildEmailRow(){
-  return Container(
-    width: double.maxFinite,
-    margin: EdgeInsets.symmetric(horizontal: 36.h),
-    child: Row(
-      children: [
-        CustomImageView(
-          imagePath: ImageConstant.imgImageRemovebgPreview12,
-          height: 72.h,
-          width: 90.h,
-        ),
-        Expanded(child: Column(
-          spacing: 6,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("lbl_email_id".tr,
-            style: theme.textTheme.bodyMedium,
+
+class _FrameSeventeenScreenState extends State<FrameSeventeenScreen> {
+  String userName = '';
+  String userEmail = '';
+  String userType = '';
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserDataFromFirebase();
+  }
+
+  Future<void> fetchUserDataFromFirebase() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+
+      if (currentUser != null) {
+        final uid = currentUser.uid;
+
+        final docSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .get();
+
+        if (docSnapshot.exists) {
+          final data = docSnapshot.data();
+          setState(() {
+            userName = data?['name'] ?? '';
+            userEmail = data?['email'] ?? '';
+            userType = data?['userType'] ?? '';
+            isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Widget buildInfoRow({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 14.0),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.green.shade700, size: 26),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey.shade700,
+                      fontWeight: FontWeight.w500,
+                    )),
+                const SizedBox(height: 4),
+                Text(value,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                    )),
+              ],
             ),
-            Obx(()=> Text(controller.userEmail.value,
-            style: theme.textTheme.bodySmall,))
-          ],
-        ),
-        )
-      ],
-    ),
-  );  
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator(color: Colors.green))
+          : SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    CircleAvatar(
+                      radius: 55,
+                      backgroundColor: Colors.green.shade100,
+                      child: Icon(Icons.person, size: 60, color: Colors.green.shade700),
+                    ),
+                    const SizedBox(height: 30),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade50,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.green.shade100),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                      child: Column(
+                        children: [
+                          buildInfoRow(
+                              icon: Icons.person, label: "Full Name", value: userName),
+                          Divider(color: Colors.green.shade100),
+                          buildInfoRow(
+                              icon: Icons.email, label: "Email Address", value: userEmail),
+                          Divider(color: Colors.green.shade100),
+                          buildInfoRow(
+                              icon: Icons.account_box, label: "User Type", value: userType),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    Text(
+                      "Version 1.0.0",
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 14,
+                        letterSpacing: 1.1,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+    );
+  }
 }
-onTapImgTempimagez2xcei()
-{
-  Get.toNamed(
-    AppRoutes.slideScreen,
-  );
-}  
-}    

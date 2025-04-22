@@ -39,6 +39,8 @@ class AppRoutes {
   static const String frameSeventeenScreen ='/frame_seventeen_screen';
   static const String iphone16ProTwelveScreen ='/iphone_16_pro_twelve_screen';
   static const String mapClientScreen ='/map_client_screen';
+  static const String viewComplaintsScreen = '/viewComplaintsScreen';
+
   static List<GetPage> pages = [
     GetPage(
       name: iphone16ProOneScreen,

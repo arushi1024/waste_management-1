@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/app_export.dart';
 import 'package:waste_management/core/utils/validations_functions.dart';
 import '../../theme/custom_button_style.dart';
@@ -193,5 +194,19 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
         );
       },
     );
+  } 
+}
+
+
+Future<void> saveComplaint(String vehicleNumber, String reason) async {
+  try {
+    await FirebaseFirestore.instance.collection('complaints').add({
+      'vehicleNumber': vehicleNumber,
+      'reason': reason,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+    print("Complaint submitted!");
+  } catch (e) {
+    print("Error saving complaint: $e");
   }
 }

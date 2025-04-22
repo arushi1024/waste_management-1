@@ -1,131 +1,186 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// Assuming you're using GetX
-
-import '../../core/app_export.dart';
-import '../../theme/custom_button_style.dart';
-import '../../widgets/app_bar/appbar_leading_image.dart';
-import '../../widgets/app_bar/custom_app_bar.dart';
-import '../../widgets/custom_elevated_button.dart';
+import 'package:get/get.dart';
 import '../../widgets/custom_text_form_field.dart';
-import 'controller/iphone_16_pro_seven_controller.dart'; // ignore_for_file: must_be_immutable
+import '../../widgets/custom_elevated_button.dart';
+import '../../core/app_export.dart';
+import 'controller/iphone_16_pro_seven_controller.dart';
 
 class Iphone16ProSevenScreen extends GetWidget<Iphone16ProSevenController> {
-  const Iphone16ProSevenScreen({super.key});
+  Iphone16ProSevenScreen({super.key});
+
+  final TextEditingController vehicleNumberController = TextEditingController();
+  final TextEditingController reasonController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();  // New location field
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: theme.colorScheme.onPrimaryContainer,
+      backgroundColor: Colors.white,
       appBar: _buildAppBar(),
-      body: SafeArea(
-        top: false,
-        child: SizedBox(
-          width: double.maxFinite,
-          child: SingleChildScrollView(
-            child: Container(
-              width: double.maxFinite,
-              padding: EdgeInsets.only(left: 18.h, top: 8.h, right: 18.h),
-              child: Column(
-                children: [
-                  Container(
-                    decoration: AppDecoration.outlineBlack,
-                    child: Text(
-                      "msg_file_a_complaint2".tr,
-                      textAlign: TextAlign.left,
-                      style: theme.textTheme.displayMedium,
-                    ),
-                  ),
-                  SizedBox(height: 56.h),
-                  _buildVehicleNumberSection(),
-                  SizedBox(height: 70.h),
-                  _buildComplaintReasonSection(),
-                  SizedBox(height: 90.h),
-                  CustomElevatedButton(
-                    height: 56.h,
-                    text: "1bl_submit2".tr,
-                    margin: EdgeInsets.only(left: 10.h, right: 22.h),
-                    buttonStyle: CustomButtonStyles.fillLightGreen,
-                    buttonTextStyle: CustomTextStyles.headlineMediumBlack900_1,
-                    onPressed: (){
-                      Get.toNamed(AppRoutes.iphone16ProEightScreen);
-                    },
-                  ),
-                  SizedBox(height: 54.h,)
-                ],
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "File a Complaint",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
             ),
-          ),
+            const SizedBox(height: 30),
+            _buildVehicleNumberInput(),
+            const SizedBox(height: 25),
+            _buildComplaintReasonInput(),
+            const SizedBox(height: 25),
+            _buildLocationInput(),  // New location input
+            const SizedBox(height: 40),
+            CustomElevatedButton(
+              text: "Submit",
+              onPressed: () async {
+                final vehicleNumber = vehicleNumberController.text.trim();
+                final reason = reasonController.text.trim();
+                final location = locationController.text.trim();  // Get the location input
+
+                if (vehicleNumber.isEmpty || reason.isEmpty || location.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      behavior: SnackBarBehavior.floating,
+                      content: Text("Please fill in all fields."),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return;
+                }
+
+                await saveComplaint(vehicleNumber, reason, location);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Complaint submitted successfully!"),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+
+                Get.toNamed(AppRoutes.iphone16ProEightScreen);
+              },
+            ),
+          ],
         ),
       ),
     );
   }
-  
-  /// Builds the AppBar widget.
-  PreferredSizeWidget _buildAppBar() {
-    return CustomAppBar(
-      leadingWidth: 72.h,
-      leading: AppbarLeadingImage(
-        imagePath: ImageConstant.imgTempimagez2xc80,
-        height: 44.h,
-        width: 44.h,
-        margin: EdgeInsets.only(left: 18.h),
-        onTap: () {
-          onTapTempimagez2xcei();
-        },
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: const Text(
+        "Complaint",
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
       ),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.black),
+        onPressed: () => Get.toNamed(AppRoutes.homepageWithMenuScreen),
+      ),
+      backgroundColor: Colors.white,
+      elevation: 1,
     );
   }
 
-  /// Builds the vehicle number section.
-  Widget _buildVehicleNumberSection() {
-    return Container(
-      width: double.maxFinite,
-      margin: EdgeInsets.only(right: 10.h),
-      child: Column(
-        spacing: 10,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Ibl_vehicle_number".tr,
-            style: CustomTextStyles.headlineMediumBlack90026,
+  Widget _buildVehicleNumberInput() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Vehicle Number",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
           ),
-          CustomTextFormField(
-            controller: controller.edittexttwoController,
-            contentPadding: EdgeInsets.all(12.h),
-            borderDecoration: TextFormFieldStyleHelper.outlineBlackTL6,
-            fillColor: appTheme.whiteA70001,
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 10),
+        CustomTextFormField(
+          hintText: "Enter vehicle number",
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          controller: vehicleNumberController,
+        ),
+      ],
     );
   }
 
-  /// Builds the complaint reason section.
-  Widget _buildComplaintReasonSection() {
-    return SizedBox(
-      width: double.maxFinite,
-      child: Column(
-        spacing: 2,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "msg_reason_for_complaint".tr,
-            style: CustomTextStyles.headlineMediumBlack900,
+  Widget _buildComplaintReasonInput() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Reason for Complaint",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
           ),
-          CustomTextFormField(
-            controller: controller.edittextoneController,
-            textInputAction: TextInputAction.done,
-            maxLines: 6,
-            contentPadding: EdgeInsets.all(12.h),
-            borderDecoration: TextFormFieldStyleHelper.outlineBlackLR8,
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 10),
+        CustomTextFormField(
+          hintText: "Describe your issue...",
+          maxLines: 6,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          controller: reasonController,
+        ),
+      ],
     );
   }
 
-  /// Navigates to the homepageWithMenuScreen when the action is triggered.
-  void onTapTempimagez2xcei() {
-    Get.toNamed(AppRoutes.homepageWithMenuScreen);
+  Widget _buildLocationInput() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Location",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 10),
+        CustomTextFormField(
+          hintText: "Enter your location",
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          controller: locationController,
+        ),
+      ],
+    );
+  }
+}
+
+Future<void> saveComplaint(String vehicleNumber, String reason, String location) async {
+  try {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      print("User not logged in.");
+      return;
+    }
+
+    await FirebaseFirestore.instance.collection('complaints').add({
+      'vehicleNumber': vehicleNumber,
+      'reason': reason,
+      'location': location,  // Save the location field
+      'status': 'open',      // Set status to 'open'
+      'timestamp': FieldValue.serverTimestamp(),
+      'userId': uid,
+    });
+
+    print("Complaint submitted successfully.");
+  } catch (e) {
+    print("Error submitting complaint: $e");
   }
 }

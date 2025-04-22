@@ -29,7 +29,7 @@ final Map<String, String> en = {
    "Ibl_settings":"Settings",
   "Ibl_about_us":"About Us",
   "Ibl_welcome":"Welcome",
-  "Ibl_your_profile":"Your Profile",
+  "Ibl_your_profile":"ile",
   "Ibl_about_us2":"About Us",
   "lbl_priyanka_reddy":"Priyanka Reddy",
   "lbl_name2":"NAME",
