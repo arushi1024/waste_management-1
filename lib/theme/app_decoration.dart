@@ -10,7 +10,10 @@ class AppDecoration {
   static BoxDecoration get fillOnPrimaryContainer => BoxDecoration(
         color: theme.colorScheme.onPrimaryContainer,
       );
-
+  static BoxDecoration get fillOnPrimaryContainer1 => BoxDecoration(
+        color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.6,),
+        image:DecorationImage(image: AssetImage(ImageConstant.imgImage2,),fit: BoxFit.fill,),
+      );
   // Outline decorations
   static BoxDecoration get outlineBlack => BoxDecoration();
 

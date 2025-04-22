@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/app_export.dart';
 import 'package:waste_management/core/utils/validations_functions.dart';
 import '../../theme/custom_button_style.dart';
@@ -8,12 +10,9 @@ import 'controller/iphone_16_pro_two_controller.dart';
 
 // ignore_for_file: must_be_immutable
 class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
-  Iphone16ProTwoScreen({Key? key})
-      : super(
-          key: key,
-        );
+  Iphone16ProTwoScreen({super.key});
 
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +26,8 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
             width: double.maxFinite,
             padding: EdgeInsets.all(40.h),
             child: Column(
+              spacing: 62,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   decoration: AppDecoration.outlineBlack,
@@ -36,7 +37,6 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
                     style: CustomTextStyles.headlineMediumBlack900_2,
                   ),
                 ),
-                SizedBox(height: 62.h),
                 _buildLoginForm(),
                 SizedBox(height: 30.h),
               ],
@@ -47,11 +47,12 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
     );
   }
 
-  /// Section Widget
+  /// Email field
   Widget _buildEmailInputField() {
     return SizedBox(
       width: double.maxFinite,
       child: Column(
+        spacing: 8,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -66,12 +67,13 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
               vertical: 8.h,
             ),
             borderDecoration: TextFormFieldStyleHelper.outlineBlueGray,
-          ),
+          )
         ],
       ),
     );
   }
 
+  /// Password field
   Widget _buildPasswordInputField() {
     return SizedBox(
       width: double.maxFinite,
@@ -94,18 +96,18 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
             ),
             borderDecoration: TextFormFieldStyleHelper.outlineBlueGray,
             validator: (value) {
-              if (value == null ||
-                  (!isValidPassword(value, isRequired: true))) {
+              if (value == null || (!isValidPassword(value, isRequired: true))) {
                 return "err_msg_please_enter_valid_password".tr;
               }
               return null;
             },
-          ),
+          )
         ],
       ),
     );
   }
 
+  /// Login form with Sign In and Forgot Password
   Widget _buildLoginForm() {
     return Container(
       width: double.maxFinite,
@@ -114,12 +116,12 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
         borderRadius: BorderRadiusStyle.roundedBorder8,
       ),
       child: Column(
+        spacing: 24,
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildEmailInputField(),
-          SizedBox(height: 24.h),
           _buildPasswordInputField(),
-          SizedBox(height: 24.h),
           CustomOutlinedButton(
             height: 40.h,
             text: "lbl_sign_in".tr,
@@ -128,11 +130,16 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
               onTapSignin();
             },
           ),
-          SizedBox(height: 16.h),
-          Text(
-            "msg_forgot_password".tr,
-            style: CustomTextStyles.bodyLargeInterOnSecondaryContainer.copyWith(
-              decoration: TextDecoration.underline,
+          //SizedBox(height: 16.h),
+
+          /// 👇 Forgot Password clickable text
+          GestureDetector(
+            onTap: _showForgotPasswordDialog,
+            child: Text(
+              "msg_forgot_password".tr,
+              style: CustomTextStyles.bodyLargeInterOnSecondaryContainer.copyWith(
+                decoration: TextDecoration.underline,
+              ),
             ),
           ),
         ],
@@ -140,10 +147,66 @@ class Iphone16ProTwoScreen extends GetWidget<Iphone16ProTwoController> {
     );
   }
 
-  /// Navigates to the homepageWithMenuScreen when the sign-in button is tapped.
+  /// Sign-in button action
   onTapSignin() {
-    Get.toNamed(
-      AppRoutes.homepageWithMenuScreen,
+    if (_formKey.currentState!.validate()) {
+      controller.loginUser();
+    }
+  }
+
+  /// 👇 Forgot Password dialog and Firebase action
+  void _showForgotPasswordDialog() {
+    final TextEditingController forgotEmailController = TextEditingController();
+
+    showDialog(
+      context: Get.context!,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Reset Password'),
+          content: TextField(
+            controller: forgotEmailController,
+            decoration: InputDecoration(hintText: "Enter your email"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                final email = forgotEmailController.text.trim();
+                if (email.isEmpty) {
+                  Get.snackbar("Input Error", "Please enter your email");
+                  return;
+                }
+
+                try {
+                  await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+                  Get.back(); // Close the dialog
+                  Get.snackbar("Success", "Password reset email sent!");
+                } on FirebaseAuthException catch (e) {
+                  Get.snackbar("Error", e.message ?? "Failed to send reset email");
+                }
+              },
+              child: Text("Send"),
+            ),
+          ],
+        );
+      },
     );
+  } 
+}
+
+
+Future<void> saveComplaint(String vehicleNumber, String reason) async {
+  try {
+    await FirebaseFirestore.instance.collection('complaints').add({
+      'vehicleNumber': vehicleNumber,
+      'reason': reason,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+    print("Complaint submitted!");
+  } catch (e) {
+    print("Error saving complaint: $e");
   }
 }

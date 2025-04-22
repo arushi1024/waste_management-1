@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import '../../../core/app_export.dart';
 import '../models/iphone_16_pro_one_model.dart';
 

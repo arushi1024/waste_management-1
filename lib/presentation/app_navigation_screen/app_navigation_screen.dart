@@ -3,7 +3,7 @@ import '../../core/app_export.dart';
 import 'controller/app_navigation_controller.dart'; // ignore_for_file: must_be_immutable
 
 class AppNavigationsGreen extends GetWidget<AppNavigationController> {
-  const AppNavigationsGreen({Key? key}) : super(key: key);
+  const AppNavigationsGreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +75,8 @@ class AppNavigationsGreen extends GetWidget<AppNavigationController> {
                               _buildScreenTitle(
                                 screenTitle: "iPhone 16 Pro - Two",
                                 onTapScreenTitle: () =>
-                                    onTapScreenTitle(AppRoutes.iphonet6ProTwoScreen),
-                              ),b
-                              _buildScreenTitle(
+                                    onTapScreenTitle(AppRoutes.iphone16ProTwoScreen),
+                              ), _buildScreenTitle(
                                 screenTitle: "HomePage with Menu",
                                 onTapScreenTitle: () =>
                                     onTapScreenTitle(AppRoutes.homepageWithMenuScreen),
@@ -85,17 +84,27 @@ class AppNavigationsGreen extends GetWidget<AppNavigationController> {
                               _buildScreenTitle(
                                 screenTitle: "iPhone 16 Pro - Seven",
                                 onTapScreenTitle: () =>
-                                    onTapScreenTitle(AppRoutes.iphonet6ProSevenScreen),
+                                    onTapScreenTitle(AppRoutes.iphone16ProSevenScreen),
                               ),
                               _buildScreenTitle(
                                 screenTitle: "iPhone 16 Pro - Eight",
                                 onTapScreenTitle: () =>
-                                    onTapScreenTitle(AppRoutes.iphonet6ProEightScreen),
+                                    onTapScreenTitle(AppRoutes.iphone16ProEightScreen),
                               ),
                               _buildScreenTitle(
                                 screenTitle: "Slide Screen",
                                 onTapScreenTitle: () =>
                                     onTapScreenTitle(AppRoutes.slideScreen),
+                              ),
+                              _buildScreenTitle(
+                                screenTitle: "Frame Seventeen",
+                                onTapScreenTitle: () =>
+                                    onTapScreenTitle(AppRoutes.frameSeventeenScreen),
+                              ),
+                              _buildScreenTitle(
+                                screenTitle: "Iphone 16 Pro - Twelve",
+                                onTapScreenTitle: () =>
+                                    onTapScreenTitle(AppRoutes.iphone16ProTwelveScreen),
                               ),
                             ],
                           ),

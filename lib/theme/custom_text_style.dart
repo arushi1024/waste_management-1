@@ -7,7 +7,9 @@ extension on TextStyle {
       fontFamily: 'Roboto',
     );
   }
-
+  TextStyle get kaiseiTokumin{
+    return copyWith(fontFamily: 'Kaisei Tokumin',);
+  }
   TextStyle get inter {
     return copyWith(
       fontFamily: 'Inter',
@@ -35,6 +37,10 @@ class CustomTextStyles {
       );
 
   static TextStyle get bodyLargeInterSecondaryContainer =>
+      theme.textTheme.displayMedium!.kaiseiTokumin.copyWith(
+        fontWeight: FontWeight.w700
+      );
+  static TextStyle get displayMediumKaiseiTokumin =>
       theme.textTheme.bodyLarge!.inter.copyWith(
         color: theme.colorScheme.secondaryContainer,
         fontSize: 16.5,
@@ -83,6 +89,10 @@ class CustomTextStyles {
       theme.textTheme.headlineMedium!.copyWith(
         color: appTheme.black900,
       );
+  static TextStyle get bodyMediumInter15=>
+      theme.textTheme.bodyMedium!.inter.copyWith(
+        fontSize:15.fSize,
+      );
 
   static TextStyle get headlineMediumBlack900_3 =>
       theme.textTheme.headlineMedium!.copyWith(
@@ -98,6 +108,10 @@ class CustomTextStyles {
   static TextStyle get titleLargeGray900 =>
       theme.textTheme.titleLarge!.copyWith(
         color: appTheme.gray900,
+      );
+    static TextStyle get headlineSmallBlack900=> theme.textTheme.headlineSmall!.copyWith(
+        color: appTheme.black900,
+        fontWeight: FontWeight.w600,
       );
 
   static TextStyle get titleLargeOnPrimaryContainer =>

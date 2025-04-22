@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Client Map</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css' rel='stylesheet' />
+  <style> 
+    body { margin: 0; padding: 0; overflow: hidden; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    .mapboxgl-popup-content {
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      font-size: 14px;
+      padding: 10px;
+    }
+    .controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1;
+      background: white;
+      padding: 10px;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+      margin: 5px;
+      padding: 8px 16px;
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #3367d6;
+    }
+    .snackbar {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 4px;
+      padding: 16px;
+      position: fixed;
+      z-index: 1000;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      font-family: Arial, sans-serif;
+    }
+    .snackbar.show {
+      visibility: visible;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+    @keyframes fadein {
+      from {bottom: 0; opacity: 0;}
+      to {bottom: 30px; opacity: 1;}
+    }
+    @keyframes fadeout {
+      from {bottom: 30px; opacity: 1;}
+      to {bottom: 0; opacity: 0;}
+    }
+    /* Truck icon styling */
+    .truck-icon {
+      width: 30px;
+      height: 30px;
+      background-color: red;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="controls">
+    <button id="moveRed">Start Truck Movement</button>
+  </div>
+  <div id="snackbar" class="snackbar"></div>
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZG5rc3R1IiwiYSI6ImNsbG52a2tlczAzcmIzZXFqZWQxcDZ3ejAifQ.6ZcF167s50csrJuwCt61qQ';
+
+    // Function to generate a random location near Bangalore
+    function getRandomLocation() {
+      const lat = 12.9416;
+      const lon = 77.5668;
+      return [lon, lat];
+    }
+
+    // Haversine Formula to calculate distance between two coordinates in kilometers
+    function haversine(lat1, lon1, lat2, lon2) {
+      const R = 6371; // Radius of the Earth in kilometers
+      const dLat = (lat2 - lat1) * (Math.PI / 180);
+      const dLon = (lon2 - lon1) * (Math.PI / 180);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    // Custom notification function
+    function showSnackbar(title, message) {
+      const snackbar = document.getElementById("snackbar");
+      snackbar.innerHTML = `<strong>${title}</strong><br>${message}`;
+      snackbar.className = "snackbar show";
+      
+      // After 3 seconds, remove the show class
+      setTimeout(() => { 
+        snackbar.className = snackbar.className.replace("show", ""); 
+      }, 3000);
+
+      // For Flutter/mobile integration
+      if (window.GeofenceChannel) {
+        try {
+          window.GeofenceChannel.postMessage(JSON.stringify({
+            title: title,
+            message: message
+          }));
+        } catch (e) {
+          console.error("Failed to send message to GeofenceChannel", e);
+        }
+      }
+    }
+
+    // Make this function available globally
+    window.Get = {
+      snackbar: showSnackbar
+    };
+
+    let map, clientMarker, truckMarker, animationFrameId;
+    let clientLocation;
+    let geofenceTriggered = false;
+    let isMoving = false;
+
+    // Try to get device location or use default
+    function initMap() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            clientLocation = [position.coords.longitude, position.coords.latitude];
+            setupMap(clientLocation);
+          },
+          () => {
+            clientLocation = getRandomLocation();
+            setupMap(clientLocation);
+          },
+          { enableHighAccuracy: true, timeout: 5000 }
+        );
+      } else {
+        clientLocation = getRandomLocation();
+        setupMap(clientLocation);
+      }
+    }
+
+    function setupMap(center) {  
+      // Initialize map with lower initial zoom level for better performance
+      map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: center,
+        zoom: 14,
+        attributionControl: false,
+        preserveDrawingBuffer: false // Improves performance
+      });
+
+      map.on('load', function() {
+        // Client location marker
+        clientMarker = new mapboxgl.Marker({ color: 'blue' })
+          .setLngLat(center)
+          .setPopup(new mapboxgl.Popup({ offset: 25, closeButton: false })
+            .setHTML("<strong>You are here</strong>"))
+          .addTo(map);
+        
+        clientMarker.togglePopup();
+
+        // Calculate truck starting position (2km away)
+        const truckStartLongitude = center[0] + (0.02);
+        const truckStartLatitude = center[1] + (0.02);
+
+        // Create a custom truck marker element for better performance
+        const truckIcon = document.createElement('div');
+        truckIcon.className = 'truck-icon';
+        truckIcon.textContent = '🚚';
+
+        // Add truck marker
+        truckMarker = new mapboxgl.Marker({ element: truckIcon })
+          .setLngLat([truckStartLongitude, truckStartLatitude])
+          .setPopup(new mapboxgl.Popup({ offset: 25 })
+            .setHTML("<strong>Trash Collection Truck</strong>"))
+          .addTo(map);
+        
+        // Fit bounds to show both markers
+        const bounds = new mapboxgl.LngLatBounds();
+        bounds.extend(center);
+        bounds.extend([truckStartLongitude, truckStartLatitude]);
+        map.fitBounds(bounds, { padding: 100 });
+      });
+
+      // Set up the control button
+      document.getElementById('moveRed').addEventListener('click', moveRedMarker);
+    }
+
+    function moveRedMarker() {
+      // Prevent multiple animations
+      if (isMoving) return;
+      
+      // Cancel any existing animation
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      
+      isMoving = true;
+      geofenceTriggered = false;
+      
+      // Reset truck position
+      const truckStartLongitude = clientLocation[0] + 0.02;
+      const truckStartLatitude = clientLocation[1] + 0.02;
+      truckMarker.setLngLat([truckStartLongitude, truckStartLatitude]);
+      
+      // Target destination (client location)
+      const finalPoint = clientLocation;
+
+      // Use fewer animation steps for better performance
+      const totalSteps = 40; // Reduced from 100
+      let currentStep = 0;
+      
+      const lngDiff = (finalPoint[0] - truckStartLongitude) / totalSteps;
+      const latDiff = (finalPoint[1] - truckStartLatitude) / totalSteps;
+      
+      // Start time for animation
+      let startTime = null;
+      const duration = 5000; // 5 seconds total for animation
+      
+      // Animation function using requestAnimationFrame for better performance
+      function animate(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Calculate new position
+        const newLng = truckStartLongitude + (finalPoint[0] - truckStartLongitude) * progress;
+        const newLat = truckStartLatitude + (finalPoint[1] - truckStartLatitude) * progress;
+        
+        // Update marker position
+        truckMarker.setLngLat([newLng, newLat]);
+        
+        // Check distance for geofence
+        const distance = haversine(clientLocation[1], clientLocation[0], newLat, newLng);
+        
+        // Trigger notification at 1km distance
+        if (distance <= 1 && !geofenceTriggered) {
+          showSnackbar("Geofence entered", "Keep your trash ready!");
+          geofenceTriggered = true;
+          
+          if (!truckMarker.getPopup().isOpen()) {
+            truckMarker.togglePopup();
+          }
+        }
+        
+        // Continue animation if not complete
+        if (progress < 1) {
+          animationFrameId = requestAnimationFrame(animate);
+        } else {
+          isMoving = false;
+        }
+      }
+      
+      // Start the animation
+      animationFrameId = requestAnimationFrame(animate);
+    }
+
+    // Initialize the map after page load
+    window.onload = initMap;
+  </script>
+</body>
+</html>

@@ -4,13 +4,11 @@ import 'controller/iphone_16_pro_one_controller.dart';
 
 // ignore_for_file: must_be_immutable
 class Iphone16ProOneScreen extends GetWidget<Iphone16ProOneController> {
-  const Iphone16ProOneScreen({Key? key})
-      : super(
-          key: key,
-        );
+  const Iphone16ProOneScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    print("Iphone16ProOneScreen is working");
     return Scaffold(
       backgroundColor: theme.colorScheme.onPrimaryContainer,
       body: SafeArea(
@@ -24,12 +22,7 @@ class Iphone16ProOneScreen extends GetWidget<Iphone16ProOneController> {
           child: Column(
             spacing: 18,
             mainAxisSize: MainAxisSize.max,
-            children: [
-              CustomImageView(
-                imagePath: ImageConstant.imgImage1,
-                height: 150.h,
-                width: double.maxFinite,
-              ),
+            children: [ CustomImageView( imagePath: ImageConstant.imgImage1, height: 150.h, width: double.maxFinite,),
               Text(
                 "lbl_loading".tr,
                 style: CustomTextStyles.bodyMedium14,

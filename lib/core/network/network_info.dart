@@ -21,7 +21,7 @@ class INetworkInfo implements NetworkInfo {
   }
 
   INetworkInfo._internal(this.connectivity) {
-    connectivity = this.connectivity;
+    connectivity = connectivity;
   }
 
   @override
@@ -62,7 +62,7 @@ class NoInternetException implements Exception {
   late String _message;
 
   NoInternetException([String message = 'NoInternetException Occurred']) {
-    this._message = message;
+    _message = message;
   }
 
   @override
