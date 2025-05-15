@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:waste_management/widgets/address_form.dart';
 import 'package:waste_management/widgets/complaints.dart';
 import 'package:waste_management/widgets/fluttermap.dart';
+import 'package:waste_management/widgets/view_address.dart';
 import '../../core/app_export.dart';
 import '../../widgets/app_bar/appbar_leading_image.dart';
 import '../../widgets/app_bar/appbar_title.dart';
@@ -83,7 +85,9 @@ class HomepageWithMenuScreen extends GetWidget<HomepageWithMenuController> {
                         // } else {
                         //   Get.snackbar('Permission Denied', 'Location access is required to track the collector.');
                         // }
-                        Get.to(TrashCollectionMap());
+                        // Get.to(TrashCollectionMap(Address: "",));
+                          showAddressBottomSheet(context);
+
                       },
                       child: SizedBox(
                         width: 158.h,
@@ -155,6 +159,53 @@ class HomepageWithMenuScreen extends GetWidget<HomepageWithMenuController> {
                   ),
                 ),
               ),
+              Padding(
+  padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 30.h),
+  child: GestureDetector(
+    onTap: () {
+      // Navigate to the Address screen
+  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (x) => ViewAddressesScreen()),
+                    );    },
+    child: Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 15.h),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary,
+        borderRadius: BorderRadius.circular(12.h),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+
+        children: [
+          Icon(
+            Icons.location_on, // Or use a custom image with Image.asset()
+            size: 24.h,
+            color: const Color.fromARGB(255, 10, 240, 167),
+          ),
+          SizedBox(width: 12.h),
+          Text(
+            "Address",
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: const Color.fromARGB(255, 10, 240, 167),
+              fontSize: 16.h,
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+),
+
             ],
           ),
         ),
@@ -230,3 +281,86 @@ class HomepageWithMenuScreen extends GetWidget<HomepageWithMenuController> {
 }
 
 }
+
+
+
+void showAddressBottomSheet(BuildContext context) async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) return;
+
+  final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+  final data = userDoc.data();
+  final addresses = (data?['address'] as List<dynamic>? ?? [])
+      .map((e) => Map<String, dynamic>.from(e))
+      .toList();
+
+  if (addresses.isEmpty) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => const Padding(
+        padding: EdgeInsets.all(24.0),
+        child: Text(
+          'No addresses found.\nPlease add an address first.',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      ),
+    );
+    return;
+  }
+
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: const Color(0xFFFAFAFA),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    ),
+    builder: (_) => Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 60,
+            height: 6,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Select Address',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          ...addresses.map((addr) {
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              color: Colors.white,
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: ListTile(
+                leading: const Icon(Icons.home, color: Color(0xFF347C7D)),
+                title: Text(
+                  addr['value'] ?? '',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                subtitle: Text('Ward: ${addr['ward'] ?? ''}'),
+                onTap: () {
+                  Navigator.pop(context); // Close the bottom sheet
+                  Get.to(() => TrashCollectionMap(address: addr['value'] ?? ''));
+                },
+              ),
+            );
+          }).toList(),
+        ],
+      ),
+    ),
+  );
+}
+
