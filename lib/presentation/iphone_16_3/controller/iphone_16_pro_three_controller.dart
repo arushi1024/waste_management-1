@@ -42,19 +42,13 @@ class Iphone16ProThreeController extends GetxController {
 
       final uid = userCredential.user?.uid;
 
-   await FirebaseFirestore.instance.collection('users').doc(uid).set({
-  'name': name,
-  'email': email,
-  'userType': userTypeSelection.value,
-  'block': block,
-  'address': [
-    {
-      'value': addressController.text,
-      'ward': block,
-    }
-  ]
-});
-
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'name': name,
+        'email': email,
+        'userType': userTypeSelection.value,
+        'block': block,
+        'address':addressController.text
+      });
 
       // Add to block collection if user is customer
       if (userTypeSelection.value == "Customer") {
